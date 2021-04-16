@@ -7,8 +7,11 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    //objectWidget = ui->visualizationWidget;
-    //objectScene = objectWidget->renderScene();
+    objectWidget = ui->visualizationWidget;
+    objectScene = objectWidget->renderScene();
+    connect(objectScene, SIGNAL(xRotationChanged(int)), ui->rotXSlider, SLOT(setValue(int)));
+    qDebug()<<"babuszka";
+    objectScene->get_RenderObject()->transform()->setRotationX(45);
 }
 
 MainWindow::~MainWindow()

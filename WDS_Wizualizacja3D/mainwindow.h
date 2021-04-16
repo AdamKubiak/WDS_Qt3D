@@ -18,7 +18,7 @@ public:
 
 private:
     Ui::MainWindow *ui;
-   // Object_Scene *objectScene;
-   // Object_Widget *objectWidget;
+    Object_Scene *objectScene;
+    Object_Widget *objectWidget;
 };
 #endif // MAINWINDOW_H

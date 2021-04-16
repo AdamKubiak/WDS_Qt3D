@@ -109,6 +109,8 @@ Object_Scene::Object_Scene(QWidget *parent)
 
 }
 
+
+
 void Object_Scene::createRenderObject()
 {
     if(objectEntity)
@@ -129,6 +131,28 @@ void Object_Scene::createRenderObject()
     objectEntity->transform()->setScale3D(QVector3D(1.5, 1, 0.5));
     objectEntity->transform()->setRotation(QQuaternion::fromAxisAndAngle(QVector3D(1, 0, 0), 45.0f));
     objectEntity->transform()->setScale(0.3);*/
+}
+
+Render_Object *Object_Scene::get_RenderObject()
+{
+    return objectEntity;
+}
+
+
+
+static void qNormalizeAngle(int &angle)
+{
+    while (angle < 0)
+        angle += 360 * 16;
+    while (angle > 360)
+        angle -= 360 * 16;
+}
+
+void Object_Scene::setXRotation(int angle)
+{
+    qNormalizeAngle(angle);
+        objectEntity->transform()->setRotationX(angle);
+        emit xRotationChanged(angle);
 }
 
 

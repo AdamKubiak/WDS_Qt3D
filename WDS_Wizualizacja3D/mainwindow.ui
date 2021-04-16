@@ -29,48 +29,15 @@
      <rect>
       <x>10</x>
       <y>10</y>
-      <width>246</width>
+      <width>251</width>
       <height>571</height>
      </rect>
     </property>
-    <layout class="QGridLayout" name="gridLayout_2">
-     <item row="3" column="0" colspan="2">
-      <layout class="QHBoxLayout" name="horizontalLayout_2">
-       <item>
-        <widget class="QLabel" name="label_2">
-         <property name="text">
-          <string>yRot</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QSlider" name="rotYSlider">
-         <property name="maximum">
-          <number>360</number>
-         </property>
-         <property name="singleStep">
-          <number>16</number>
-         </property>
-         <property name="pageStep">
-          <number>15</number>
-         </property>
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="tickPosition">
-          <enum>QSlider::TicksAbove</enum>
-         </property>
-         <property name="tickInterval">
-          <number>15</number>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-     <item row="0" column="0" colspan="2">
+    <layout class="QGridLayout" name="gridLayout_3">
+     <item row="0" column="0">
       <layout class="QGridLayout" name="gridLayout">
-       <item row="0" column="1">
-        <widget class="QLabel" name="RotationLabel">
+       <item row="2" column="2">
+        <widget class="QLabel" name="yTranslationValue">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
            <horstretch>0</horstretch>
@@ -83,7 +50,112 @@
           </font>
          </property>
          <property name="text">
-          <string>Rotacja</string>
+          <string>dane4</string>
+         </property>
+         <property name="margin">
+          <number>5</number>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="yRotationLabel">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="font">
+          <font>
+           <pointsize>11</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>Y:</string>
+         </property>
+         <property name="margin">
+          <number>5</number>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QLabel" name="xRotationValue">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="font">
+          <font>
+           <pointsize>11</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>dane1</string>
+         </property>
+         <property name="margin">
+          <number>5</number>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="zRotationLabel">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="font">
+          <font>
+           <pointsize>11</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>Z:</string>
+         </property>
+         <property name="margin">
+          <number>5</number>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="2">
+        <widget class="QLabel" name="xTranslationValue">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="font">
+          <font>
+           <pointsize>11</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>dane2</string>
+         </property>
+         <property name="margin">
+          <number>5</number>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="2">
+        <widget class="QLabel" name="zTranslationValue">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="font">
+          <font>
+           <pointsize>11</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>dane6</string>
          </property>
          <property name="margin">
           <number>5</number>
@@ -132,8 +204,8 @@
          </property>
         </widget>
        </item>
-       <item row="1" column="1">
-        <widget class="QLabel" name="xRotationValue">
+       <item row="3" column="1">
+        <widget class="QLabel" name="zRotationValue">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
            <horstretch>0</horstretch>
@@ -146,15 +218,15 @@
           </font>
          </property>
          <property name="text">
-          <string>dane1</string>
+          <string>dane5</string>
          </property>
          <property name="margin">
           <number>5</number>
          </property>
         </widget>
        </item>
-       <item row="1" column="2">
-        <widget class="QLabel" name="xTranslationValue">
+       <item row="0" column="1">
+        <widget class="QLabel" name="RotationLabel">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
            <horstretch>0</horstretch>
@@ -167,28 +239,7 @@
           </font>
          </property>
          <property name="text">
-          <string>dane2</string>
-         </property>
-         <property name="margin">
-          <number>5</number>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="0">
-        <widget class="QLabel" name="yRotationLabel">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="font">
-          <font>
-           <pointsize>11</pointsize>
-          </font>
-         </property>
-         <property name="text">
-          <string>Y:</string>
+          <string>Rotacja</string>
          </property>
          <property name="margin">
           <number>5</number>
@@ -216,93 +267,9 @@
          </property>
         </widget>
        </item>
-       <item row="2" column="2">
-        <widget class="QLabel" name="yTranslationValue">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="font">
-          <font>
-           <pointsize>11</pointsize>
-          </font>
-         </property>
-         <property name="text">
-          <string>dane4</string>
-         </property>
-         <property name="margin">
-          <number>5</number>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="0">
-        <widget class="QLabel" name="zRotationLabel">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="font">
-          <font>
-           <pointsize>11</pointsize>
-          </font>
-         </property>
-         <property name="text">
-          <string>Z:</string>
-         </property>
-         <property name="margin">
-          <number>5</number>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="1">
-        <widget class="QLabel" name="zRotationValue">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="font">
-          <font>
-           <pointsize>11</pointsize>
-          </font>
-         </property>
-         <property name="text">
-          <string>dane5</string>
-         </property>
-         <property name="margin">
-          <number>5</number>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="2">
-        <widget class="QLabel" name="zTranslationValue">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="font">
-          <font>
-           <pointsize>11</pointsize>
-          </font>
-         </property>
-         <property name="text">
-          <string>dane6</string>
-         </property>
-         <property name="margin">
-          <number>5</number>
-         </property>
-        </widget>
-       </item>
       </layout>
      </item>
-     <item row="1" column="0" colspan="2">
+     <item row="1" column="0">
       <widget class="QPushButton" name="resetViewButton">
        <property name="font">
         <font>
@@ -317,17 +284,17 @@
        </property>
       </widget>
      </item>
-     <item row="2" column="0" colspan="2">
-      <layout class="QHBoxLayout" name="horizontalLayout_3">
+     <item row="2" column="0">
+      <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
-        <widget class="QLabel" name="label_3">
+        <widget class="QLabel" name="label">
          <property name="text">
-          <string>zRot</string>
+          <string>xRot</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QSlider" name="rotZSlider">
+        <widget class="QSlider" name="rotXSlider">
          <property name="maximum">
           <number>360</number>
          </property>
@@ -350,17 +317,50 @@
        </item>
       </layout>
      </item>
-     <item row="4" column="0" colspan="2">
-      <layout class="QHBoxLayout" name="horizontalLayout">
+     <item row="3" column="0">
+      <layout class="QHBoxLayout" name="horizontalLayout_2">
        <item>
-        <widget class="QLabel" name="label">
+        <widget class="QLabel" name="label_2">
          <property name="text">
-          <string>xRot</string>
+          <string>yRot</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QSlider" name="rotXSlider">
+        <widget class="QSlider" name="rotYSlider">
+         <property name="maximum">
+          <number>360</number>
+         </property>
+         <property name="singleStep">
+          <number>16</number>
+         </property>
+         <property name="pageStep">
+          <number>15</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="tickPosition">
+          <enum>QSlider::TicksAbove</enum>
+         </property>
+         <property name="tickInterval">
+          <number>15</number>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item row="4" column="0">
+      <layout class="QGridLayout" name="gridLayout_2">
+       <item row="0" column="0">
+        <widget class="QLabel" name="label_3">
+         <property name="text">
+          <string>zRot</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QSlider" name="rotZSlider">
          <property name="maximum">
           <number>360</number>
          </property>
@@ -395,8 +395,57 @@
      <height>20</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menuPlik">
+    <property name="title">
+     <string>Plik</string>
+    </property>
+    <addaction name="actionZa_aduj_model"/>
+    <addaction name="actionUsu_model"/>
+   </widget>
+   <widget class="QMenu" name="menuKomunikacja">
+    <property name="title">
+     <string>Komunikacja</string>
+    </property>
+    <widget class="QMenu" name="menuWybierz_port">
+     <property name="title">
+      <string>Wybierz port</string>
+     </property>
+     <addaction name="separator"/>
+    </widget>
+    <addaction name="actionStart"/>
+    <addaction name="actionStop"/>
+    <addaction name="actionPrzeszukaj_porty"/>
+    <addaction name="menuWybierz_port"/>
+   </widget>
+   <addaction name="menuPlik"/>
+   <addaction name="menuKomunikacja"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionZa_aduj_model">
+   <property name="text">
+    <string>Załaduj model</string>
+   </property>
+  </action>
+  <action name="actionUsu_model">
+   <property name="text">
+    <string>Usuń model</string>
+   </property>
+  </action>
+  <action name="actionStart">
+   <property name="text">
+    <string>Start</string>
+   </property>
+  </action>
+  <action name="actionStop">
+   <property name="text">
+    <string>Stop</string>
+   </property>
+  </action>
+  <action name="actionPrzeszukaj_porty">
+   <property name="text">
+    <string>Przeszukaj porty</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
