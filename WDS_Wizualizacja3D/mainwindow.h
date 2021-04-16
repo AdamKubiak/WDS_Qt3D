@@ -15,6 +15,25 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+    void menuAvailablePorts();
+
+    void setXRotationValue(float value);
+
+    void setYRotationValue(float value);
+
+    void setZRotationValue(float value);
+
+    void setXTranslationValue(float value);
+
+    void setYTranslationValue(float value);
+
+    void setZTranslationValue(float value);
+
+public slots:
+    void selectPortMenuOptions(QAction* action);
+    void setRotationValue(const QQuaternion &value);
+    void setTranslationValue(const QVector3D &value);
+
 
 private:
     Ui::MainWindow *ui;

@@ -24,7 +24,7 @@
      </rect>
     </property>
    </widget>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -50,7 +50,7 @@
           </font>
          </property>
          <property name="text">
-          <string>dane4</string>
+          <string>dane</string>
          </property>
          <property name="margin">
           <number>5</number>
@@ -92,7 +92,7 @@
           </font>
          </property>
          <property name="text">
-          <string>dane1</string>
+          <string>dane</string>
          </property>
          <property name="margin">
           <number>5</number>
@@ -134,7 +134,7 @@
           </font>
          </property>
          <property name="text">
-          <string>dane2</string>
+          <string>dane</string>
          </property>
          <property name="margin">
           <number>5</number>
@@ -155,7 +155,7 @@
           </font>
          </property>
          <property name="text">
-          <string>dane6</string>
+          <string>dane</string>
          </property>
          <property name="margin">
           <number>5</number>
@@ -218,7 +218,7 @@
           </font>
          </property>
          <property name="text">
-          <string>dane5</string>
+          <string>dane</string>
          </property>
          <property name="margin">
           <number>5</number>
@@ -260,7 +260,7 @@
           </font>
          </property>
          <property name="text">
-          <string>dane3</string>
+          <string>dane</string>
          </property>
          <property name="margin">
           <number>5</number>
@@ -414,18 +414,12 @@
     </widget>
     <addaction name="actionStart"/>
     <addaction name="actionStop"/>
-    <addaction name="actionPrzeszukaj_porty"/>
     <addaction name="menuWybierz_port"/>
    </widget>
    <addaction name="menuPlik"/>
    <addaction name="menuKomunikacja"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
-  <action name="actionZa_aduj_model">
-   <property name="text">
-    <string>Załaduj model</string>
-   </property>
-  </action>
   <action name="actionUsu_model">
    <property name="text">
     <string>Usuń model</string>
@@ -444,6 +438,11 @@
   <action name="actionPrzeszukaj_porty">
    <property name="text">
     <string>Przeszukaj porty</string>
+   </property>
+  </action>
+  <action name="actionZa_aduj_model">
+   <property name="text">
+    <string>Załaduj model</string>
    </property>
   </action>
  </widget>

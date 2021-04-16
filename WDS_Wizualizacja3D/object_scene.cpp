@@ -104,9 +104,6 @@ Object_Scene::Object_Scene(QWidget *parent)
     //createRenderableObject(rootEntity);
     this->setLayout(new QGridLayout);
     layout()->addWidget(container);
-
-
-
 }
 
 
@@ -120,7 +117,7 @@ void Object_Scene::createRenderObject()
 
     objectEntity = new Render_Object(rootEntity);
     //dzialajace wczytywanie obiektu
-    objectEntity->loader()->setSource(QUrl(QString("file:C:/Users/john/OneDrive/Pulpit/Dragon.dae")));
+    objectEntity->loader()->setSource(QUrl(QString("file:C:/Users/john/OneDrive/Pulpit/object1.dae")));
 
     //dzialajacy torus
     /*objectEntity->torusMesh()->setRadius(5);
@@ -138,21 +135,26 @@ Render_Object *Object_Scene::get_RenderObject()
     return objectEntity;
 }
 
-
-
-static void qNormalizeAngle(int &angle)
+void Object_Scene::setOrientation(const QQuaternion &orientation)
 {
-    while (angle < 0)
-        angle += 360 * 16;
-    while (angle > 360)
-        angle -= 360 * 16;
+    if(this->orientation!=orientation)
+    {
+    this->orientation = orientation;
+
+    objectEntity->transform()->setRotation(this->orientation);
+
+    emit orientationChanged(orientation);
+    }
 }
 
-void Object_Scene::setXRotation(int angle)
+void Object_Scene::setPosition(const QVector3D &position)
 {
-    qNormalizeAngle(angle);
-        objectEntity->transform()->setRotationX(angle);
-        emit xRotationChanged(angle);
-}
+    if(this->position!=position)
+    {
+    this->position = position;
 
+    objectEntity->transform()->setTranslation(this->position);
+    emit positionChanged(position);
+    }
+}
 

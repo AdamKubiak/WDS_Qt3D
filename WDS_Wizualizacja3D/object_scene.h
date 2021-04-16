@@ -24,15 +24,17 @@ public:
 
 public slots:
     // slots for xyz-rotation slider
-    void setXRotation(int angle);
+    void setOrientation(const QQuaternion &orientation);
+    void setPosition(const QVector3D &value);
     //void setYRotation(int angle);
     //void setZRotation(int angle);
 
 signals:
-    // signaling rotation from mouse movement
-    void xRotationChanged(int angle);
-    //void yRotationChanged(int angle);
-    //void zRotationChanged(int angle);
+
+    void positionChanged(const QVector3D&);
+
+    void orientationChanged(const QQuaternion&);
+
 
 private:
 
