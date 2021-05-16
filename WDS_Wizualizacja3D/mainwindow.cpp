@@ -1,7 +1,8 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include <QSerialPort>
 #include <QSerialPortInfo>
+#include <QFileDialog>
+#include <QDir>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -9,23 +10,16 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
+
     objectWidget = ui->visualizationWidget;
     objectScene = objectWidget->renderScene();
-    //connect(objectScene, SIGNAL(xRotationChanged(int)), ui->rotXSlider, SLOT(setValue(int)));
-    qDebug()<<"babuszka";
-
+    device = new Device();
+    addConnections();
     menuAvailablePorts();
-
-    connect(objectScene, &Object_Scene::orientationChanged,this, &MainWindow::setRotationValue);
-
-    connect(objectScene, &Object_Scene::positionChanged, this, &MainWindow::setTranslationValue);
-
-    connect(objectScene, &Object_Scene::orientationChanged, objectScene, &Object_Scene::setOrientation);
-    connect(objectScene, &Object_Scene::positionChanged, objectScene, &Object_Scene::setPosition);
 
     objectScene->setPosition(QVector3D(-1,2,-10));
     objectScene->setOrientation(QQuaternion(QVector4D(QVector3D(0,0,1),0.269)));
-    //objectScene->setOrientation(QfromEulerAngles(QVector3D(45,0,0)));
+    makePlot();
 
 }
 
@@ -36,18 +30,115 @@ MainWindow::~MainWindow()
 
 void MainWindow::menuAvailablePorts()
 {
-    QList<QSerialPortInfo> serialPorts = QSerialPortInfo::availablePorts();
-    for(auto &x: serialPorts)
+    ui->menuWybierz_port->clear();
+    QList<QSerialPortInfo> devices = QSerialPortInfo::availablePorts();
+    for(int i = 0; i < devices.size(); i++)
     {
-        ui->menuWybierz_port->addAction(new QAction(x.portName(), this));
+      ui->menuWybierz_port->addAction(new QAction(devices.at(i).portName(), this));
+
     }
-    connect(ui->menuWybierz_port, &QMenu::triggered, this, &MainWindow::selectPortMenuOptions);
 }
 
-void MainWindow::selectPortMenuOptions(QAction *action)
+
+void MainWindow::addConnections()
 {
-    //receiver->setSerialPortName(action->iconText());
+
+
+
+    connect(objectScene, &Object_Scene::orientationChanged,this, &MainWindow::setRotationValue);
+
+    connect(objectScene, &Object_Scene::positionChanged, this, &MainWindow::setTranslationValue);
+
+    connect(objectScene, &Object_Scene::orientationChanged, objectScene, &Object_Scene::setOrientation);
+
+    connect(objectScene, &Object_Scene::positionChanged, objectScene, &Object_Scene::setPosition);
+    connect(device,&Device::orientationChanged,objectScene,&Object_Scene::setOrientation);
+    connect(device,&Device::positionChanged,objectScene,&Object_Scene::setPosition);
+
+    connect(device,&Device::gyroCalibrated,this,&MainWindow::gyroCalibrated);
+
+    connect(device,&Device::sendGyroDatatoChart,this,&MainWindow::setChartsValue);
+
+
+
+    connect(ui->actionZa_aduj_model, &QAction::triggered,[=]()
+    {
+    //QString filter = "Dae File (*.dae) ;; Obj File (*.obj)";
+    //QUrl renderFile =QFileDialog::getOpenFileUrl(this,"Wybierz model formatu .dae",QDir::homePath(),filter);
+    QUrl renderFile =QFileDialog::getOpenFileUrl(this,"Wybierz model formatu .dae",QDir::homePath());
+    if(0!=renderFile.toString().length())
+    {
+        objectScene->setRenderFile(renderFile);
+        on_resetViewButton_clicked();
+    }
+    });
+
+
+    connect(ui->actionUsu_model, &QAction::triggered,[=]()
+    {
+
+        objectScene->setRenderFile(QUrl(QString("file:C:/Users/john/OneDrive/Pulpit/object1.dae")));
+        on_resetViewButton_clicked();
+    });
+
+    connect(ui->actionZnajd_port,&QAction::triggered, [=]()
+    {
+        menuAvailablePorts();
+    });
+
+    connect(ui->menuWybierz_port, &QMenu::triggered, this, &MainWindow::selectPort);
+
+    connect(ui->actionStart,&QAction::triggered,device,&Device::startCommunication);
+
+    /*connect(ui->actionStart, &QAction::triggered, [=]()
+    {
+        if(device->getSerialPortName() == 0) {
+          return;
+        }
+
+
+        device->get_SerialPortObject()->setPortName(device->getSerialPortName());
+
+        // OTWÓRZ I SKONFIGURUJ PORT:
+        if(!device->get_SerialPortObject()->isOpen())
+        {
+        if(device->get_SerialPortObject()->open(QSerialPort::ReadWrite)) {
+          device->get_SerialPortObject()->setBaudRate(QSerialPort::Baud115200);
+          device->get_SerialPortObject()->setDataBits(QSerialPort::Data8);
+          device->get_SerialPortObject()->setParity(QSerialPort::NoParity);
+          device->get_SerialPortObject()->setStopBits(QSerialPort::OneStop);
+          device->get_SerialPortObject()->setFlowControl(QSerialPort::NoFlowControl);
+          qDebug()<<"Otwarcie portu szeregowego się powiodło!";
+
+
+        } else {
+          qDebug()<<"Otwarcie portu szeregowego się nie powiodło!";
+        }
+        }
+
+        else
+        {
+            qDebug()<<"Port już otwarty";
+            return;
+        }
+    });*/
+
+    connect(ui->actionStop, &QAction::triggered, [=]()
+    {
+        if(device->get_SerialPortObject()->isOpen()) {
+          device->get_SerialPortObject()->close();
+          qDebug()<<"Zamknięto połączenie.";
+        } else {
+          qDebug()<<"Port nie jest otwarty!";
+          return;
+        }
+    });
+
+
 }
+
+
+
 
 void MainWindow::setXRotationValue(float value)
 {
@@ -80,6 +171,7 @@ void MainWindow::setZTranslationValue(float value)
     ui->zTranslationValue->setText(QString::number(value));
 }
 
+
 void MainWindow::setRotationValue(const QQuaternion &value)
 {
     QVector3D eulerAngles = value.toEulerAngles();
@@ -94,4 +186,203 @@ void MainWindow::setTranslationValue(const QVector3D &value)
     setXTranslationValue(value.x());
     setYTranslationValue(value.y());
     setZTranslationValue(value.z());
+}
+
+void MainWindow::selectPort(QAction *trigger)
+{
+    device->setSerialName(trigger->iconText());
+    // device->get_SerialPortObject()->setPortName(trigger->iconText());
+}
+
+void MainWindow::makePlot()
+{
+   QCPGraph *graph1 = ui->plotXAxis->addGraph();
+   QCPGraph *graph2 = ui->plotYAxis->addGraph();
+    QCPGraph *graph3 = ui->plotZAxis->addGraph();
+
+
+   //graph1->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssCircle, QPen(Qt::black, 1.5), QBrush(Qt::white), 9));
+   graph1->setPen(QPen(QColor(10, 140, 70, 160), 2));
+   graph2->setPen(QPen(QColor(10, 140, 70, 160), 2));
+   graph3->setPen(QPen(QColor(10, 140, 70, 160), 2));
+   // set some pens, brushes and backgrounds:
+   ui->plotXAxis->xAxis->setBasePen(QPen(Qt::white, 1));
+   ui->plotXAxis->yAxis->setBasePen(QPen(Qt::white, 1));
+   ui->plotXAxis->xAxis->setTickPen(QPen(Qt::white, 1));
+   ui->plotXAxis->yAxis->setTickPen(QPen(Qt::white, 1));
+   ui->plotXAxis->xAxis->setSubTickPen(QPen(Qt::white, 1));
+   ui->plotXAxis->yAxis->setSubTickPen(QPen(Qt::white, 1));
+   ui->plotXAxis->xAxis->setTickLabelColor(Qt::white);
+   ui->plotXAxis->yAxis->setTickLabelColor(Qt::white);
+   ui->plotXAxis->xAxis->grid()->setPen(QPen(QColor(140, 140, 140), 1, Qt::DotLine));
+   ui->plotXAxis->yAxis->grid()->setPen(QPen(QColor(140, 140, 140), 1, Qt::DotLine));
+   ui->plotXAxis->xAxis->grid()->setSubGridPen(QPen(QColor(80, 80, 80), 1, Qt::DotLine));
+   ui->plotXAxis->yAxis->grid()->setSubGridPen(QPen(QColor(80, 80, 80), 1, Qt::DotLine));
+   ui->plotXAxis->xAxis->grid()->setSubGridVisible(true);
+   ui->plotXAxis->yAxis->grid()->setSubGridVisible(true);
+   ui->plotXAxis->xAxis->grid()->setZeroLinePen(Qt::NoPen);
+   ui->plotXAxis->yAxis->grid()->setZeroLinePen(Qt::NoPen);
+   ui->plotXAxis->xAxis->setUpperEnding(QCPLineEnding::esSpikeArrow);
+   ui->plotXAxis->yAxis->setUpperEnding(QCPLineEnding::esSpikeArrow);
+   QLinearGradient plotGradient;
+   plotGradient.setStart(0, 0);
+   plotGradient.setFinalStop(0, 350);
+   plotGradient.setColorAt(0, QColor(80, 80, 80));
+   plotGradient.setColorAt(1, QColor(50, 50, 50));
+   ui->plotXAxis->setBackground(plotGradient);
+   QLinearGradient axisRectGradient;
+   axisRectGradient.setStart(0, 0);
+   axisRectGradient.setFinalStop(0, 350);
+   axisRectGradient.setColorAt(0, QColor(80, 80, 80));
+   axisRectGradient.setColorAt(1, QColor(30, 30, 30));
+   ui->plotXAxis->axisRect()->setBackground(axisRectGradient);
+
+   ui->plotYAxis->xAxis->setBasePen(QPen(Qt::white, 1));
+   ui->plotYAxis->yAxis->setBasePen(QPen(Qt::white, 1));
+   ui->plotYAxis->xAxis->setTickPen(QPen(Qt::white, 1));
+   ui->plotYAxis->yAxis->setTickPen(QPen(Qt::white, 1));
+   ui->plotYAxis->xAxis->setSubTickPen(QPen(Qt::white, 1));
+   ui->plotYAxis->yAxis->setSubTickPen(QPen(Qt::white, 1));
+   ui->plotYAxis->xAxis->setTickLabelColor(Qt::white);
+   ui->plotYAxis->yAxis->setTickLabelColor(Qt::white);
+   ui->plotYAxis->xAxis->grid()->setPen(QPen(QColor(140, 140, 140), 1, Qt::DotLine));
+   ui->plotYAxis->yAxis->grid()->setPen(QPen(QColor(140, 140, 140), 1, Qt::DotLine));
+   ui->plotYAxis->xAxis->grid()->setSubGridPen(QPen(QColor(80, 80, 80), 1, Qt::DotLine));
+   ui->plotYAxis->yAxis->grid()->setSubGridPen(QPen(QColor(80, 80, 80), 1, Qt::DotLine));
+   ui->plotYAxis->xAxis->grid()->setSubGridVisible(true);
+   ui->plotYAxis->yAxis->grid()->setSubGridVisible(true);
+   ui->plotYAxis->xAxis->grid()->setZeroLinePen(Qt::NoPen);
+   ui->plotYAxis->yAxis->grid()->setZeroLinePen(Qt::NoPen);
+   ui->plotYAxis->xAxis->setUpperEnding(QCPLineEnding::esSpikeArrow);
+   ui->plotYAxis->yAxis->setUpperEnding(QCPLineEnding::esSpikeArrow);
+   ui->plotYAxis->setBackground(plotGradient);
+   ui->plotYAxis->axisRect()->setBackground(axisRectGradient);
+
+   ui->plotZAxis->xAxis->setBasePen(QPen(Qt::white, 1));
+   ui->plotZAxis->yAxis->setBasePen(QPen(Qt::white, 1));
+   ui->plotZAxis->xAxis->setTickPen(QPen(Qt::white, 1));
+   ui->plotZAxis->yAxis->setTickPen(QPen(Qt::white, 1));
+   ui->plotZAxis->xAxis->setSubTickPen(QPen(Qt::white, 1));
+   ui->plotZAxis->yAxis->setSubTickPen(QPen(Qt::white, 1));
+   ui->plotZAxis->xAxis->setTickLabelColor(Qt::white);
+   ui->plotZAxis->yAxis->setTickLabelColor(Qt::white);
+   ui->plotZAxis->xAxis->grid()->setPen(QPen(QColor(140, 140, 140), 1, Qt::DotLine));
+   ui->plotZAxis->yAxis->grid()->setPen(QPen(QColor(140, 140, 140), 1, Qt::DotLine));
+   ui->plotZAxis->xAxis->grid()->setSubGridPen(QPen(QColor(80, 80, 80), 1, Qt::DotLine));
+   ui->plotZAxis->yAxis->grid()->setSubGridPen(QPen(QColor(80, 80, 80), 1, Qt::DotLine));
+   ui->plotZAxis->xAxis->grid()->setSubGridVisible(true);
+   ui->plotZAxis->yAxis->grid()->setSubGridVisible(true);
+   ui->plotZAxis->xAxis->grid()->setZeroLinePen(Qt::NoPen);
+   ui->plotZAxis->yAxis->grid()->setZeroLinePen(Qt::NoPen);
+   ui->plotZAxis->xAxis->setUpperEnding(QCPLineEnding::esSpikeArrow);
+   ui->plotZAxis->yAxis->setUpperEnding(QCPLineEnding::esSpikeArrow);
+   ui->plotZAxis->setBackground(plotGradient);
+   ui->plotZAxis->axisRect()->setBackground(axisRectGradient);
+
+
+
+
+    // create graph and assign data to it:
+    //ui->plotXAxis->addGraph();
+
+
+    // give the axes some labels:
+    ui->plotXAxis->xAxis->setLabel("Czas");
+    ui->plotXAxis->yAxis->setLabel("Prędkość");
+    // set axes ranges, so we see all data:
+
+
+
+
+   // ui->plotYAxis->addGraph();
+
+    // give the axes some labels:
+    ui->plotYAxis->xAxis->setLabel("Czas");
+    ui->plotYAxis->yAxis->setLabel("Prędkość");
+
+
+    //ui->plotZAxis->addGraph();
+
+    // give the axes some labels:
+    ui->plotZAxis->xAxis->setLabel("Czas");
+    ui->plotZAxis->yAxis->setLabel("Prędkość");
+
+
+}
+
+void MainWindow::gyroCalibrated()
+{
+    disconnect(device,&Device::newDeviceValues,device,&Device::gyroCalibration);
+    disconnect(device,&Device::newDeviceValues,device,&Device::accCalibration);
+    connect(device,&Device::newDeviceValues,device,&Device::calculateRPY);
+    qDebug()<<"JECHANE";
+}
+
+void MainWindow::setChartsValue(const QVector3D &Axis)
+{
+    static QTime prev = QTime::currentTime();
+    float dt = (float)prev.msecsTo(QTime::currentTime())/1000.0;
+    Xgyro_y.append(Axis.x());
+    Ygyro_y.append(Axis.y());
+    Zgyro_y.append(Axis.z());
+    dtTime.append(dt);
+
+    ui->plotXAxis->xAxis->setRange(dt-1,dt+0.09);
+    ui->plotXAxis->yAxis->setRange(-300,300);
+
+    ui->plotYAxis->xAxis->setRange(dt-1,dt+0.09);
+    ui->plotYAxis->yAxis->setRange(-300,300);
+
+    ui->plotZAxis->xAxis->setRange(dt-1,dt+0.09);
+    ui->plotZAxis->yAxis->setRange(-300,300);
+
+    while(dtTime.size()> 200)
+            dtTime.erase(dtTime.begin());
+
+        while(Xgyro_y.size()> 200)
+            Xgyro_y.erase(Xgyro_y.begin());
+
+        while(Ygyro_y.size()> 200)
+            Ygyro_y.erase(Ygyro_y.begin());
+
+        while(Zgyro_y.size()> 200)
+            Zgyro_y.erase(Zgyro_y.begin());
+
+        //auto subv_x1 = dtTime.mid(dtTime.size()-1);
+        //auto subv_y1 = Xgyro_y.mid(Xgyro_y.size()-1);
+
+        //auto subv_y2 = Ygyro_y.mid(Ygyro_y.size()-1);
+
+        //auto subv_y3 = Zgyro_y.mid(Zgyro_y.size()-1);
+
+
+
+        //ui->plotXAxis->graph(0)->setData(subv_x1, subv_y1);
+        //ui->plotYAxis->graph(0)->setData(subv_x1, subv_y2);
+        //ui->plotZAxis->graph(0)->setData(subv_x1, subv_y3);
+        ui->plotXAxis->graph(0)->setData(dtTime, Xgyro_y);
+        ui->plotYAxis->graph(0)->setData(dtTime, Ygyro_y);
+        ui->plotZAxis->graph(0)->setData(dtTime, Zgyro_y);
+
+
+        //ui->plot->graph(1)->setData(qv_x, qv_y);
+
+        ui->plotXAxis->replot();
+        ui->plotYAxis->replot();
+        ui->plotZAxis->replot();
+
+        ui->plotXAxis->update();
+        ui->plotYAxis->update();
+        ui->plotZAxis->update();
+
+
+
+}
+
+void MainWindow::on_resetViewButton_clicked()
+{
+    objectScene->setOrientation(QQuaternion(QVector4D(QVector3D(0,0,0),0)));
+    objectScene->setPosition(QVector3D(0,0,0));
+    device->resetDeviceValues();
+
 }

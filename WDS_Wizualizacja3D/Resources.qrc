@@ -1,6 +1,5 @@
 <RCC>
     <qresource prefix="/rec">
-        <file>MODELS/Chest.obj</file>
         <file>MODELS/Dragon.dae</file>
         <file>MODELS/object1.dae</file>
     </qresource>

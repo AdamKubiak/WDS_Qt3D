@@ -13,42 +13,94 @@
 #include <Qt3DRender/QCamera>
 #include <Qt3DRender/QTextureImage>
 
+
+/*!
+ * \class Object_Scene
+ * \brief Klasa ma na celu stworzenie scene, kamerę, oświetlenie dla wybranego modelu 3D
+ */
 class Object_Scene : public QWidget
 {
     Q_OBJECT
 public:
+    /*!
+     * \brief Object_Scene konstruktor
+     * \param QWidget parent
+     */
     explicit Object_Scene(QWidget *parent = nullptr);
 
+    /*!
+     * \brief Funkcja renderuje obiekt który aktualnie znajduję się w zmiennej
+     * local_loader obiektu klasy Render_Object
+     */
     void createRenderObject();
+
+    /*!
+     * \brief Funkcja odpowiedzialna za przypisywanie wartości pola typu QUrl i wyrenderowanie
+     * obiektu z podanej ścieżki
+     * \param renderFile - zmienna typu QUrl która przechowuje ścieżkę do obiektu 3D
+     */
+    void setRenderFile(QUrl renderFile);
+
+    /*!
+     * \brief Funkcja zwraca pole wskaźnik do pola klasy Object_Scene
+     * \return pole typu Render_Object
+     */
     Render_Object *get_RenderObject();
 
+    void setTextureFile(QUrl textureFile);
+
+
+    void setSceneLoader(QUrl renderFile);
+
+    Render_Object* getObjectEntity(){return objectEntity;};
+
 public slots:
-    // slots for xyz-rotation slider
+    /*!
+     * \brief Slot zmienia orientacje obiektu na podstawie otrzymanych danych
+     * \param orientation - zmienna typu QQuaternion
+     */
     void setOrientation(const QQuaternion &orientation);
-    void setPosition(const QVector3D &value);
-    //void setYRotation(int angle);
-    //void setZRotation(int angle);
+
+    /*!
+     * \brief Slot zmienia pozycje obiektu na podstawie otrzymanych danych
+     * \param position - zmienna typu QVector3D
+     */
+    void setPosition(const QVector3D &position);
 
 signals:
 
+    /*!
+     * \brief Sygnał jest emitowany gdy orientacja obiektu ulega zmianie
+     * \param Aktualna pozycja obiektu typu QQuaternion
+     */
+    void orientationChanged(const QQuaternion&);
+
+
+    /*!
+     * \brief Sygnał jest emitowany gdy pozycja obiektu ulega zmianie
+     * \param Aktualna pozycja obiektu typu QVector
+     */
     void positionChanged(const QVector3D&);
 
-    void orientationChanged(const QQuaternion&);
+
 
 
 private:
 
-    Qt3DCore::QEntity *rootEntity;
+    Qt3DCore::QEntity *rootEntity; //!< Główny obiekt sceny do której podpięte są wszystkie elementy Qt3D
 
-    Qt3DRender::QCamera *cameraEntity;
+    Qt3DRender::QCamera *cameraEntity;//!<Kamera sceny
 
-    Render_Object* objectEntity;
+    Render_Object* objectEntity;//!<obiekt do wyrenderowania
 
 
+    QQuaternion orientation; //!< aktualna orientacja obiektu
 
-    QQuaternion orientation;
+    QVector3D position;//!< aktualna pozycja obiektu
 
-    QVector3D position;
+    QUrl renderFile; //!< Ścieżka do pliku który zawiera obiekt 3D
+
+    QUrl textureFile;
 
 };
 

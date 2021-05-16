@@ -61,41 +61,7 @@ Object_Scene::Object_Scene(QWidget *parent)
     //lightEntity->addComponent(lightTransform);
     lightTransform->setTranslation(QVector3D(30,-100, -20));
     lightEntity->addComponent(lightTransform);
-
-      // Torus
-    /*
-     Qt3DCore::QEntity *torusEntity = new Qt3DCore::QEntity(rootEntity);
-     Qt3DRender::QMaterial *material = new Qt3DExtras::QPhongMaterial(rootEntity);
-    Qt3DExtras::QTorusMesh *torusMesh = new Qt3DExtras::QTorusMesh;
-    torusMesh->setRadius(5);
-    torusMesh->setMinorRadius(1);
-    torusMesh->setRings(100);
-    torusMesh->setSlices(20);
-    //3DCore::QTransform *torusTransform = new Qt3DCore::QTransform;
-    objectEntity->transform()->setScale3D(QVector3D(1.5, 1, 0.5));
-    objectEntity->transform()->setRotation(QQuaternion::fromAxisAndAngle(QVector3D(1, 0, 0), 45.0f));
-    torusEntity->addComponent(torusMesh);
-    objectEntity->transform()->setRotationY(95);
-    //torusEntity->addComponent(torusTransform);
-    torusEntity->addComponent(material);
-    torusEntity->addComponent(objectEntity->transform());
-    objectEntity->transform()->setRotationZ(90);*/
-
-
-    /*sceneLoaderEntity = new Qt3DCore::QEntity(rootEntity);
-    loader = new Qt3DRender::QSceneLoader(sceneLoaderEntity);
-    objectEntity = new Render_Object(rootEntity);
-    objectEntity->transform()->setRotationY(45);
-    objectEntity->transform()->setScale(0.1f);
-    objectEntity->transform()->setTranslation(QVector3D(0, -2, 0));
-    loader->setObjectName("object1.dae");
-    sceneLoaderEntity->addComponent(loader);
-    loader->setSource(QUrl(QString("file:C:/Users/john/OneDrive/Pulpit/Dragon.dae")));*/
-
-   // torusTransform->setRotationY(45);
-    //sceneLoaderEntity->addComponent(objectEntity->transform());
-
-
+    renderFile = QUrl(QString("file:C:/Users/john/OneDrive/Pulpit/object1.dae"));
 
 
     // Set root object of the scene
@@ -116,18 +82,20 @@ void Object_Scene::createRenderObject()
     }
 
     objectEntity = new Render_Object(rootEntity);
-    //dzialajace wczytywanie obiektu
-    objectEntity->loader()->setSource(QUrl(QString("file:C:/Users/john/OneDrive/Pulpit/object1.dae")));
+    objectEntity->loader()->setSource(renderFile);
+    objectEntity->transform()->setScale(0.35);
+}
 
-    //dzialajacy torus
-    /*objectEntity->torusMesh()->setRadius(5);
-    objectEntity->torusMesh()->setMinorRadius(1);
-    objectEntity->torusMesh()->setRings(100);
-    objectEntity->torusMesh()->setSlices(20);
+void Object_Scene::setRenderFile(QUrl renderFile)
+{
+    this->renderFile = renderFile;
+    createRenderObject();
+}
 
-    objectEntity->transform()->setScale3D(QVector3D(1.5, 1, 0.5));
-    objectEntity->transform()->setRotation(QQuaternion::fromAxisAndAngle(QVector3D(1, 0, 0), 45.0f));
-    objectEntity->transform()->setScale(0.3);*/
+void Object_Scene::setTextureFile(QUrl textureFile)
+{
+    this->textureFile = textureFile;
+    createRenderObject();
 }
 
 Render_Object *Object_Scene::get_RenderObject()

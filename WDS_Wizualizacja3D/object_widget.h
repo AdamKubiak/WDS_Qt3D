@@ -9,17 +9,30 @@ namespace Ui {
 class Object_Widget;
 }
 
-
+/*!
+ * \class Object_Widget
+ * \brief Klasa Object_Widget która zawiera w sobie widget odpowiedzialny za wyświetlenie sceny 3D
+ */
 class Object_Widget : public QWidget
 {
     Q_OBJECT
 
 public:
-
+    /*!
+     * \brief Konstruktor klasy Object_Widget
+     * \param QWidget parent
+     */
     explicit Object_Widget(QWidget *parent = nullptr);
 
+
+    /*!
+     * \brief Destruktor klasy Object_Widget
+     */
     ~Object_Widget();
 
+    /*!
+     * \brief Funkcja zwraca wskaźnik do QWidgetu stworzonego w formularzu object_widget.ui
+     */
     Object_Scene *renderScene();
 public slots:
 

@@ -1,7 +1,7 @@
 QT       += core gui serialport
 QT       += 3dcore 3drender 3dinput 3dextras
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets printsupport
 
 CONFIG += c++11
 
@@ -10,16 +10,24 @@ CONFIG += c++11
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    crc16.cpp \
+    datacontainer.cpp \
+    device.cpp \
     main.cpp \
     mainwindow.cpp \
     object_scene.cpp \
     object_widget.cpp \
+    qcustomplot.cpp \
     render_object.cpp
 
 HEADERS += \
+    checksum.h \
+    datacontainer.h \
+    device.h \
     mainwindow.h \
     object_scene.h \
     object_widget.h \
+    qcustomplot.h \
     render_object.h
 
 FORMS += \
