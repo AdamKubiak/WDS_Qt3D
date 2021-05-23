@@ -22,10 +22,7 @@ class Object_Scene : public QWidget
 {
     Q_OBJECT
 public:
-    /*!
-     * \brief Object_Scene konstruktor
-     * \param QWidget parent
-     */
+
     explicit Object_Scene(QWidget *parent = nullptr);
 
     /*!
@@ -37,7 +34,7 @@ public:
     /*!
      * \brief Funkcja odpowiedzialna za przypisywanie wartości pola typu QUrl i wyrenderowanie
      * obiektu z podanej ścieżki
-     * \param renderFile - zmienna typu QUrl która przechowuje ścieżkę do obiektu 3D
+     *  \param[in]  renderFile - zmienna typu QUrl która przechowuje ścieżkę do obiektu 3D
      */
     void setRenderFile(QUrl renderFile);
 
@@ -57,13 +54,13 @@ public:
 public slots:
     /*!
      * \brief Slot zmienia orientacje obiektu na podstawie otrzymanych danych
-     * \param orientation - zmienna typu QQuaternion
+     *  \param[in]  orientation - zmienna typu QQuaternion z wartościami rotacji obiektu 3D
      */
     void setOrientation(const QQuaternion &orientation);
 
     /*!
      * \brief Slot zmienia pozycje obiektu na podstawie otrzymanych danych
-     * \param position - zmienna typu QVector3D
+     * \param[in] position - zmienna typu QVector3D z wartościami translacji obiektu
      */
     void setPosition(const QVector3D &position);
 
@@ -71,7 +68,7 @@ signals:
 
     /*!
      * \brief Sygnał jest emitowany gdy orientacja obiektu ulega zmianie
-     * \param Aktualna pozycja obiektu typu QQuaternion
+     * \param[in] Aktualna pozycja obiektu typu QQuaternion
      */
     void orientationChanged(const QQuaternion&);
 

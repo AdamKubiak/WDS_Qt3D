@@ -58,6 +58,7 @@ void MainWindow::addConnections()
     connect(device,&Device::gyroCalibrated,this,&MainWindow::gyroCalibrated);
 
     connect(device,&Device::sendGyroDatatoChart,this,&MainWindow::setChartsValue);
+    connect(device,&Device::sendAccDatatoChart,this,&MainWindow::setChartsValue);
 
 
 
@@ -127,6 +128,9 @@ void MainWindow::addConnections()
     {
         if(device->get_SerialPortObject()->isOpen()) {
           device->get_SerialPortObject()->close();
+          disconnect(device,&Device::newDeviceValues,device,&Device::calculateRPY);
+          connect(device,&Device::newDeviceValues,device,&Device::gyroCalibration);
+          connect(device,&Device::newDeviceValues,device,&Device::accCalibration);
           qDebug()<<"Zamknięto połączenie.";
         } else {
           qDebug()<<"Port nie jest otwarty!";
@@ -196,15 +200,25 @@ void MainWindow::selectPort(QAction *trigger)
 
 void MainWindow::makePlot()
 {
+    //gyro graphs
    QCPGraph *graph1 = ui->plotXAxis->addGraph();
    QCPGraph *graph2 = ui->plotYAxis->addGraph();
-    QCPGraph *graph3 = ui->plotZAxis->addGraph();
+   QCPGraph *graph3 = ui->plotZAxis->addGraph();
 
+   //acc graphs
+   QCPGraph *graph4 = ui->plotXAxis->addGraph();
+   QCPGraph *graph5 = ui->plotYAxis->addGraph();
+   QCPGraph *graph6 = ui->plotZAxis->addGraph();
 
    //graph1->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssCircle, QPen(Qt::black, 1.5), QBrush(Qt::white), 9));
    graph1->setPen(QPen(QColor(10, 140, 70, 160), 2));
    graph2->setPen(QPen(QColor(10, 140, 70, 160), 2));
    graph3->setPen(QPen(QColor(10, 140, 70, 160), 2));
+
+   graph4->setPen(QPen(QColor(220,20,60), 2));
+   graph5->setPen(QPen(QColor(220,20,60), 2));
+   graph6->setPen(QPen(QColor(220,20,60), 2));
+
    // set some pens, brushes and backgrounds:
    ui->plotXAxis->xAxis->setBasePen(QPen(Qt::white, 1));
    ui->plotXAxis->yAxis->setBasePen(QPen(Qt::white, 1));
@@ -236,6 +250,8 @@ void MainWindow::makePlot()
    axisRectGradient.setColorAt(0, QColor(80, 80, 80));
    axisRectGradient.setColorAt(1, QColor(30, 30, 30));
    ui->plotXAxis->axisRect()->setBackground(axisRectGradient);
+   ui->plotXAxis->xAxis->setLabelColor(Qt::white);
+   ui->plotXAxis->yAxis->setLabelColor(Qt::white);
 
    ui->plotYAxis->xAxis->setBasePen(QPen(Qt::white, 1));
    ui->plotYAxis->yAxis->setBasePen(QPen(Qt::white, 1));
@@ -257,6 +273,8 @@ void MainWindow::makePlot()
    ui->plotYAxis->yAxis->setUpperEnding(QCPLineEnding::esSpikeArrow);
    ui->plotYAxis->setBackground(plotGradient);
    ui->plotYAxis->axisRect()->setBackground(axisRectGradient);
+   ui->plotYAxis->xAxis->setLabelColor(Qt::white);
+   ui->plotYAxis->yAxis->setLabelColor(Qt::white);
 
    ui->plotZAxis->xAxis->setBasePen(QPen(Qt::white, 1));
    ui->plotZAxis->yAxis->setBasePen(QPen(Qt::white, 1));
@@ -278,6 +296,8 @@ void MainWindow::makePlot()
    ui->plotZAxis->yAxis->setUpperEnding(QCPLineEnding::esSpikeArrow);
    ui->plotZAxis->setBackground(plotGradient);
    ui->plotZAxis->axisRect()->setBackground(axisRectGradient);
+   ui->plotZAxis->xAxis->setLabelColor(Qt::white);
+   ui->plotZAxis->yAxis->setLabelColor(Qt::white);
 
 
 
@@ -288,7 +308,7 @@ void MainWindow::makePlot()
 
     // give the axes some labels:
     ui->plotXAxis->xAxis->setLabel("Czas");
-    ui->plotXAxis->yAxis->setLabel("Prędkość");
+    ui->plotXAxis->yAxis->setLabel("Dane z urządzenia");
     // set axes ranges, so we see all data:
 
 
@@ -298,14 +318,17 @@ void MainWindow::makePlot()
 
     // give the axes some labels:
     ui->plotYAxis->xAxis->setLabel("Czas");
-    ui->plotYAxis->yAxis->setLabel("Prędkość");
+    ui->plotYAxis->yAxis->setLabel("Dane z urządzenia");
 
 
     //ui->plotZAxis->addGraph();
 
     // give the axes some labels:
     ui->plotZAxis->xAxis->setLabel("Czas");
-    ui->plotZAxis->yAxis->setLabel("Prędkość");
+    ui->plotZAxis->yAxis->setLabel("Dane z urządzenia");
+    ui->plotXAxis->yAxis->setRange(-20000,20000);
+    ui->plotYAxis->yAxis->setRange(-20000,20000);
+    ui->plotZAxis->yAxis->setRange(-20000,20000);
 
 
 }
@@ -315,29 +338,45 @@ void MainWindow::gyroCalibrated()
     disconnect(device,&Device::newDeviceValues,device,&Device::gyroCalibration);
     disconnect(device,&Device::newDeviceValues,device,&Device::accCalibration);
     connect(device,&Device::newDeviceValues,device,&Device::calculateRPY);
-    qDebug()<<"JECHANE";
 }
 
-void MainWindow::setChartsValue(const QVector3D &Axis)
+/*void MainWindow::setChartsValue(const QVector3D &Axis, char ID)
 {
     static QTime prev = QTime::currentTime();
-    float dt = (float)prev.msecsTo(QTime::currentTime())/1000.0;
-    Xgyro_y.append(Axis.x());
-    Ygyro_y.append(Axis.y());
-    Zgyro_y.append(Axis.z());
-    dtTime.append(dt);
+    dt = (float)prev.msecsTo(QTime::currentTime())/1000.0;
 
     ui->plotXAxis->xAxis->setRange(dt-1,dt+0.09);
-    ui->plotXAxis->yAxis->setRange(-300,300);
+
 
     ui->plotYAxis->xAxis->setRange(dt-1,dt+0.09);
-    ui->plotYAxis->yAxis->setRange(-300,300);
+
 
     ui->plotZAxis->xAxis->setRange(dt-1,dt+0.09);
-    ui->plotZAxis->yAxis->setRange(-300,300);
+    dtTime.append(dt);
 
-    while(dtTime.size()> 200)
-            dtTime.erase(dtTime.begin());
+    if(ui->checkBox_2->isChecked())
+    {
+        Xgyro_y.append(Axis.x());
+        Ygyro_y.append(Axis.y());
+        Zgyro_y.append(Axis.z());
+
+
+
+    //Xgyro_y.append(Axis.x());
+    //Ygyro_y.append(Axis.y());
+    //Zgyro_y.append(Axis.z());
+
+
+
+
+
+
+    //while(dtTime.size()> 200)
+      //      dtTime.erase(dtTime.begin());
+
+
+        while(dtTime.size()> 200)
+                dtTime.erase(dtTime.begin());
 
         while(Xgyro_y.size()> 200)
             Xgyro_y.erase(Xgyro_y.begin());
@@ -348,21 +387,16 @@ void MainWindow::setChartsValue(const QVector3D &Axis)
         while(Zgyro_y.size()> 200)
             Zgyro_y.erase(Zgyro_y.begin());
 
-        //auto subv_x1 = dtTime.mid(dtTime.size()-1);
-        //auto subv_y1 = Xgyro_y.mid(Xgyro_y.size()-1);
-
-        //auto subv_y2 = Ygyro_y.mid(Ygyro_y.size()-1);
-
-        //auto subv_y3 = Zgyro_y.mid(Zgyro_y.size()-1);
-
-
-
-        //ui->plotXAxis->graph(0)->setData(subv_x1, subv_y1);
-        //ui->plotYAxis->graph(0)->setData(subv_x1, subv_y2);
-        //ui->plotZAxis->graph(0)->setData(subv_x1, subv_y3);
         ui->plotXAxis->graph(0)->setData(dtTime, Xgyro_y);
         ui->plotYAxis->graph(0)->setData(dtTime, Ygyro_y);
         ui->plotZAxis->graph(0)->setData(dtTime, Zgyro_y);
+
+
+
+
+        //ui->plotXAxis->graph(0)->setData(dtTime, Xgyro_y);
+        //ui->plotYAxis->graph(0)->setData(dtTime, Ygyro_y);
+        //ui->plotZAxis->graph(0)->setData(dtTime, Zgyro_y);
 
 
         //ui->plot->graph(1)->setData(qv_x, qv_y);
@@ -374,8 +408,165 @@ void MainWindow::setChartsValue(const QVector3D &Axis)
         ui->plotXAxis->update();
         ui->plotYAxis->update();
         ui->plotZAxis->update();
+    }
+
+}
+
+void MainWindow::setChartsValueAccelerometer(const QVector3D &Axis, char ID)
+{
 
 
+    if(ui->checkBox->isChecked())
+    {
+
+        Xacc_y.append(Axis.x());
+        Yacc_y.append(Axis.y());
+        Zacc_y.append(Axis.z());
+
+
+
+
+
+
+
+        while(Xacc_y.size()> 200)
+            Xacc_y.erase(Xacc_y.begin());
+
+        while(Yacc_y.size()> 200)
+            Yacc_y.erase(Yacc_y.begin());
+
+        while(Zacc_y.size()> 200)
+            Zacc_y.erase(Zacc_y.begin());
+
+        ui->plotXAxis->graph(1)->setData(dtTime, Xacc_y);
+        ui->plotYAxis->graph(1)->setData(dtTime, Yacc_y);
+        ui->plotZAxis->graph(1)->setData(dtTime, Zacc_y);
+
+
+        //ui->plotXAxis->graph(0)->setData(dtTime, Xgyro_y);
+        //ui->plotYAxis->graph(0)->setData(dtTime, Ygyro_y);
+        //ui->plotZAxis->graph(0)->setData(dtTime, Zgyro_y);
+
+
+        //ui->plot->graph(1)->setData(qv_x, qv_y);
+
+        ui->plotXAxis->replot();
+        ui->plotYAxis->replot();
+        ui->plotZAxis->replot();
+
+        ui->plotXAxis->update();
+        ui->plotYAxis->update();
+        ui->plotZAxis->update();
+}
+}*/
+
+void MainWindow::setChartsValue(const QVector3D &Axis, char ID)
+{
+    static int i = 0;
+
+
+
+    static QTime prev = QTime::currentTime();
+    dt = (float)prev.msecsTo(QTime::currentTime())/1000.0;
+
+    if(ID=='G')
+    {
+        Xgyro_y.append(Axis.x());
+        Ygyro_y.append(Axis.y());
+        Zgyro_y.append(Axis.z());
+    }
+
+    if(ID=='A')
+    {
+        Xacc_y.append(Axis.x());
+        Yacc_y.append(Axis.y());
+        Zacc_y.append(Axis.z());
+    }
+
+    dtTime.append(dt);
+
+    ui->plotXAxis->xAxis->setRange(dt-1,dt+0.09);
+
+
+    ui->plotYAxis->xAxis->setRange(dt-1,dt+0.09);
+
+
+    ui->plotZAxis->xAxis->setRange(dt-1,dt+0.09);
+
+
+
+    //while(dtTime.size()> 200)
+      //      dtTime.erase(dtTime.begin());
+
+    if(ID=='G')
+    {
+        while(dtTime.size()> 200)
+                dtTime.erase(dtTime.begin());
+
+        while(Xgyro_y.size()> 200)
+            Xgyro_y.erase(Xgyro_y.begin());
+
+        while(Ygyro_y.size()> 200)
+            Ygyro_y.erase(Ygyro_y.begin());
+
+        while(Zgyro_y.size()> 200)
+            Zgyro_y.erase(Zgyro_y.begin());
+
+
+    }
+
+    if(ID=='A')
+    {
+        while(dtTime.size()> 200)
+                dtTime.erase(dtTime.begin());
+
+        while(Xacc_y.size()> 200)
+            Xacc_y.erase(Xacc_y.begin());
+
+        while(Yacc_y.size()> 200)
+            Yacc_y.erase(Yacc_y.begin());
+
+        while(Zacc_y.size()> 200)
+            Zacc_y.erase(Zacc_y.begin());
+
+
+    }
+
+    if(i<6)
+    {
+        i++;
+        return;
+    }
+
+    if(ui->checkBox_2->isChecked())
+    {
+    ui->plotXAxis->graph(0)->setData(dtTime, Xgyro_y);
+    ui->plotYAxis->graph(0)->setData(dtTime, Ygyro_y);
+    ui->plotZAxis->graph(0)->setData(dtTime, Zgyro_y);
+    }
+    if(ui->checkBox->isChecked())
+    {
+    ui->plotXAxis->graph(1)->setData(dtTime, Xacc_y);
+    ui->plotYAxis->graph(1)->setData(dtTime, Yacc_y);
+    ui->plotZAxis->graph(1)->setData(dtTime, Zacc_y);
+    }
+
+        //ui->plotXAxis->graph(0)->setData(dtTime, Xgyro_y);
+        //ui->plotYAxis->graph(0)->setData(dtTime, Ygyro_y);
+        //ui->plotZAxis->graph(0)->setData(dtTime, Zgyro_y);
+
+
+        //ui->plot->graph(1)->setData(qv_x, qv_y);
+
+
+        ui->plotXAxis->replot();
+        ui->plotYAxis->replot();
+        ui->plotZAxis->replot();
+
+        ui->plotXAxis->update();
+        ui->plotYAxis->update();
+        ui->plotZAxis->update();
+        i=0;
 
 }
 

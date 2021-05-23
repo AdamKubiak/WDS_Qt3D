@@ -3,6 +3,7 @@
 #include "string.h"
 #define M_PI 3.14159265358979323846
 #include <math.h>
+
 Device::Device(QObject *parent)
     : QObject(parent)
 {
@@ -31,6 +32,7 @@ void Device::resetDeviceValues()
 {
     orientationVector = QVector3D(0,0,0);
     orientationQauternion = QQuaternion(0,orientationVector);
+    positionVelocityVector = QVector3D(0,0,0);
     positionVector = QVector3D(0,0,0);
 }
 
@@ -89,7 +91,7 @@ void Device::getData()
            data.erase(0,character+1);
            character = data.find(' ');
            separator = data.substr(0,character);
-           int crc = std::atoi(separator.c_str());
+           //int crc = std::atoi(separator.c_str());
 
            //sprintf((char*)buffer,"%c%i %i %i", id,x, y,z);
            //uint16_t CRC = crc_16(buffer,strlen((char*)buffer));
@@ -131,7 +133,7 @@ void Device::getData()
            data.erase(0,character+1);
            character = data.find(' ');
            separator = data.substr(0,character);
-           int crc = std::atoi(separator.c_str());
+           //int crc = std::atoi(separator.c_str());
 
 
 
@@ -142,6 +144,7 @@ void Device::getData()
            dataContainer->setY(y);
            dataContainer->setZ(z);
            qDebug()<<dataContainer->getID()<<dataContainer->getX()<<dataContainer->getY()<<dataContainer->getZ();
+           emit sendAccDatatoChart(QVector3D(dataContainer->getX(),dataContainer->getY(),dataContainer->getZ()),dataContainer->getID());
 
        }
 
@@ -153,6 +156,7 @@ void Device::getData()
 
 void Device::startCommunication()
 {
+
     if(serialName == 0) {
       return;
     }
@@ -170,10 +174,22 @@ void Device::startCommunication()
       serialPort.setStopBits(QSerialPort::OneStop);
       serialPort.setFlowControl(QSerialPort::NoFlowControl);
       qDebug()<<"Otwarcie portu szeregowego się powiodło!";
+      disconnect(&serialPort,&QSerialPort::readyRead, this, &Device::getData);
+      disconnect(this,&Device::newDeviceValues,this,&Device::gyroCalibration);
+      disconnect(this,&Device::newDeviceValues,this,&Device::accCalibration);
+      QMessageBox::StandardButton reply = QMessageBox::question(NULL,"Kalibracja", "Aby dokonać kalibracji trzymaj płytkę nieruchomo, proces trwa 8 s,chcesz kontynuować?",
+                                                                QMessageBox::Yes|QMessageBox::No);
+      if(reply == QMessageBox::Yes)
+      {
       connect(&serialPort,&QSerialPort::readyRead, this, &Device::getData);
       connect(this,&Device::newDeviceValues,this,&Device::gyroCalibration);
       connect(this,&Device::newDeviceValues,this,&Device::accCalibration);
-     // connect(this,&Device::newDeviceValues,this,&Device::calculateRPY);
+      }
+      else
+      {
+      connect(&serialPort,&QSerialPort::readyRead, this, &Device::getData);
+      connect(this,&Device::newDeviceValues,this,&Device::calculateRPY);
+      }
 
 
     } else {
@@ -254,6 +270,7 @@ void Device::calculateRPY()
 
     if(Check == 2)
     {
+
         static QTime substractTime = QTime::currentTime();
         float dt = gyroDT = (float)substractTime.msecsTo(QTime::currentTime())/1000.0;
         substractTime = QTime::currentTime();
@@ -271,21 +288,31 @@ void Device::calculateRPY()
     }
     else if(dataContainer->getID()=='A')
     {
+
         static QTime substractTime = QTime::currentTime();
         float dt = (float)substractTime.msecsTo(QTime::currentTime())/1000.0;
         substractTime = QTime::currentTime();
+        rawAccelerometer.setX(dataContainer->getX());
+        rawAccelerometer.setY(dataContainer->getY());
+        rawAccelerometer.setZ(dataContainer->getZ());
+
+
+            correctionX = correctionX*0.6 + dataContainer->getX()*0.4;
+            correctionY = correctionY*0.6 + dataContainer->getY()*0.4;
+            correctionZ = correctionZ*0.6 + dataContainer->getZ()*0.4;
+
         int X,Y,Z;
-        X = (dataContainer->getX())*9.81*2/32183;
-        Y = (dataContainer->getY())*9.81*2/32183;
-        Z = (dataContainer->getZ())*9.81*2/32183;
+        X = (dataContainer->getX()-correctionX)*9.81*2/32183;
+        Y = (dataContainer->getY()-correctionY)*9.81*2/32183;
+        Z = -(dataContainer->getZ()-correctionZ)*9.81*2/32183;
 
-        positionVelocityVector.setX(positionVelocityVector.x() + X*dt);
-        positionVelocityVector.setY(positionVelocityVector.y() + Y*dt);
-        positionVelocityVector.setZ(positionVelocityVector.z() + Z*dt);
+        positionVelocityVector.setX(positionVelocityVector.x()*0.7 + X*dt);
+        positionVelocityVector.setY(positionVelocityVector.y()*0.7 + Y*dt);
+        positionVelocityVector.setZ(positionVelocityVector.z()*0.7 + Z*dt);
 
-        positionVector.setX(positionVector.x()*0.9 + positionVelocityVector.x()*dt);
-        positionVector.setY(positionVector.y()*0.9 + positionVelocityVector.y()*dt);
-        positionVector.setZ(positionVector.z()*0.9 + positionVelocityVector.z()*dt);
+        positionVector.setX(positionVector.x() + positionVelocityVector.x()*dt+X*dt*dt);
+        positionVector.setY(positionVector.y() + positionVelocityVector.y()*dt+Y*dt*dt);
+        positionVector.setZ(positionVector.z() + positionVelocityVector.z()*dt+Z*dt*dt);
 
 
 
@@ -298,10 +325,16 @@ void Device::calculateRPY()
         accelerometerData.setY((dataContainer->getY()-YaccERROR)*2.0*32183);
         accelerometerData.setZ((dataContainer->getZ()-ZaccERROR)*2.0*32183);
 
+        emit positionChanged(positionVector*40);
+
+
         if(Check == 1)
         Check++;
-        emit sendAccDatatoChart(QVector3D(X,Y,Z), dt);
-        //emit positionChanged(positionVector*0.1);
+        //emit sendAccDatatoChart(rawAccelerometer,dataContainer->getID());
+        //emit sendAccDatatoChart(QVector3D(dataContainer->getX(),dataContainer->getY(),dataContainer->getZ()),dataContainer->getID());
+
+
+
     }
     else if(dataContainer->getID() == 'G')
     {
@@ -309,12 +342,14 @@ void Device::calculateRPY()
         gyroscopeData.setY((dataContainer->getY()-YgyroERROR)*0.0175);
         gyroscopeData.setZ((dataContainer->getZ()-ZgyroERROR)*0.0175);
         Check++;
-        emit sendGyroDatatoChart(gyroscopeData);
+        emit sendGyroDatatoChart(QVector3D(dataContainer->getX(),dataContainer->getY(),dataContainer->getZ()),dataContainer->getID());
+        //emit sendAccDatatoChart(rawAccelerometer,'A');
     }
 }
 
 void Device::gyroCalibration()
 {
+    //static QMessageBox *info;
     if(dataContainer->getID()=='G')
     {
     qDebug()<<"KALIBRUJE";
@@ -322,6 +357,8 @@ void Device::gyroCalibration()
     int samples = 300;
     if(c ==0)
     {
+
+    //info.information(NULL,"Proces kalibracji", "Kalibracja...");
     XgyroMAX = INT_MIN;
     XgyroMIN = INT_MAX;
     YgyroMAX = INT_MIN;
@@ -332,6 +369,8 @@ void Device::gyroCalibration()
     YgyroERROR = 0;;
     ZgyroERROR = 0;;
     }
+
+
 
     if(c<samples)
     {
@@ -354,6 +393,10 @@ void Device::gyroCalibration()
     XgyroERROR = XgyroERROR/samples;
     YgyroERROR = YgyroERROR/samples;
     ZgyroERROR = ZgyroERROR/samples;
+    c = 0;
+    //info.close();
+    //delete info;
+
     emit gyroCalibrated();
     }
 }
@@ -401,6 +444,7 @@ void Device::accCalibration()
     XaccERROR = XaccERROR/samples;
     YaccERROR = YaccERROR/samples;
     ZaccERROR = ZaccERROR/samples;
+    c=0;
     emit accCalibrated();
     }
 }

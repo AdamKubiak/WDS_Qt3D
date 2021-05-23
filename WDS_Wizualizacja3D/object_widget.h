@@ -18,20 +18,13 @@ class Object_Widget : public QWidget
     Q_OBJECT
 
 public:
-    /*!
-     * \brief Konstruktor klasy Object_Widget
-     * \param QWidget parent
-     */
     explicit Object_Widget(QWidget *parent = nullptr);
 
-
-    /*!
-     * \brief Destruktor klasy Object_Widget
-     */
     ~Object_Widget();
 
     /*!
      * \brief Funkcja zwraca wskaźnik do QWidgetu stworzonego w formularzu object_widget.ui
+     * \return wskaźnik na scene
      */
     Object_Scene *renderScene();
 public slots:
