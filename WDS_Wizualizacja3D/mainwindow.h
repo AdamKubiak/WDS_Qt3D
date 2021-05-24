@@ -31,34 +31,34 @@ public:
     void menuAvailablePorts();
 
     /*!
-     * \brief Funkcja ustawia wartość rotacji wzdłóż osi X w postaci stopni w GUI użytkownika
+     * \brief Funkcja ustawia wartość rotacji wzdłuż osi OX w stopniach w GUI użytkownika
      */
     void setXRotationValue(float value);
     /*!
-     * \brief Funkcja ustawia wartość rotacji wzdłóż osi Y w postaci stopni w GUI użytkownika
+     * \brief Funkcja ustawia wartość rotacji wzdłuż osi OY w stopniach w GUI użytkownika
      * \param[in] value - wartość rotacji
      */
     void setYRotationValue(float value);
     /*!
-     * \brief Funkcja ustawia wartość rotacji wzdłóż osi Z w postaci stopni w GUI użytkownika
+     * \brief Funkcja ustawia wartość rotacji wzdłuż osi OZ w stopniach w GUI użytkownika
      * \param[in] value - wartość rotacji
      */
     void setZRotationValue(float value);
 
     /*!
-     * \brief Funkcja ustawia wartość translacji wzdłóż osi X w postaci stopni w GUI użytkownika
+     * \brief Funkcja ustawia wartość translacji wzdłuż osi OX w stopniach w GUI użytkownika
      * \param[in] value - wartość rotacji
      */
     void setXTranslationValue(float value);
 
     /*!
-     * \brief Funkcja ustawia wartość translacji wzdłóż osi Y w postaci stopni w GUI użytkownika
+     * \brief Funkcja ustawia wartość translacji wzdłuż osi OY w stopniach w GUI użytkownika
      * \param[in] value - wartość translacji
      */
     void setYTranslationValue(float value);
 
     /*!
-     * \brief Funkcja ustawia wartość translacji wzdłóż osi Z w postaci stopni w GUI użytkownika
+     * \brief Funkcja ustawia wartość translacji wzdłuż osi OZ w stopniach w GUI użytkownika
      * \param[in] value - wartość translacji
      */
     void setZTranslationValue(float value);

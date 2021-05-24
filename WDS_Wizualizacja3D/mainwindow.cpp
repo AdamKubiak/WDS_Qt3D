@@ -3,6 +3,7 @@
 #include <QSerialPortInfo>
 #include <QFileDialog>
 #include <QDir>
+#include <sstream>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -17,7 +18,7 @@ MainWindow::MainWindow(QWidget *parent)
     addConnections();
     menuAvailablePorts();
 
-    objectScene->setPosition(QVector3D(-1,2,-10));
+    objectScene->setPosition(QVector3D(-1.11111,2.11111,-10.11111));
     objectScene->setOrientation(QQuaternion(QVector4D(QVector3D(0,0,1),0.269)));
     makePlot();
 
@@ -146,33 +147,41 @@ void MainWindow::addConnections()
 
 void MainWindow::setXRotationValue(float value)
 {
-    ui->xRotationValue->setText(QString::number(value));
+    //float temp = toPreci
+      //      value
+    float nearest = roundf(value * 1000) / 1000;
+    ui->xRotationValue->setText(QString::number(nearest));
     ui->xRotationValue->update();
 }
 
 void MainWindow::setYRotationValue(float value)
 {
-    ui->yRotationValue->setText(QString::number(value));
+    float nearest = roundf(value * 1000) / 1000;
+    ui->yRotationValue->setText(QString::number(nearest));
 }
 
 void MainWindow::setZRotationValue(float value)
 {
-    ui->zRotationValue->setText(QString::number(value));
+    float nearest = roundf(value * 1000) / 1000;
+    ui->zRotationValue->setText(QString::number(nearest));
 }
 
 void MainWindow::setXTranslationValue(float value)
 {
-    ui->xTranslationValue->setText(QString::number(value));
+    float nearest = roundf(value * 1000) / 1000;
+    ui->xTranslationValue->setText(QString::number(nearest));
 }
 
 void MainWindow::setYTranslationValue(float value)
 {
-    ui->yTranslationValue->setText(QString::number(value));
+    float nearest = roundf(value * 1000) / 1000;
+    ui->yTranslationValue->setText(QString::number(nearest));
 }
 
 void MainWindow::setZTranslationValue(float value)
 {
-    ui->zTranslationValue->setText(QString::number(value));
+    float nearest = roundf(value * 1000) / 1000;
+    ui->zTranslationValue->setText(QString::number(nearest));
 }
 
 
