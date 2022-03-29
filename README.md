@@ -29,6 +29,9 @@ pu
 ![](docs/img/samolot1.jpg)
 ![](docs/img/samolot2.jpg)
 
+## Wykresy danych sensorycznych
+![](docs/img/plots.png)
+
 ## Dokumentacja
 Link do dokumentacji doxygen:
 https://drive.google.com/drive/folders/1Zru7rwTKC2_0PqNryoxwpd-XHhf7YqBr?usp=sharing
