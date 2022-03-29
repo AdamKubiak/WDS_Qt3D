@@ -2,8 +2,8 @@
 ![](docs/img/anatomy_wds.jpg)
 
 # Główne cechy projektu
-## W ramach projektu zrealizowano następujące zadania:
-- [X] Pasek narzędzi – W pasku narzędzi będzie można wyszukać urzędzenia podłą-
+## Opis funkcjonalności aplikacji:
+- [X] Pasek narzędzi – W pasku narzędzi można wyszukać urzędzenia podłą-
 czone do portów COM, następnie połączyć się z płytką wybierając odpowiedni
 port. Możliwy jest również wybór pliku z modelem 3D, którym chcemy manipu-
 lować.
